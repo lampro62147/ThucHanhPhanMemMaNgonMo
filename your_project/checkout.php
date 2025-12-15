@@ -6,6 +6,13 @@ if (empty($_SESSION['cart'])) {
     exit;
 }
 
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     include 'includes/db.php';
 
@@ -21,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
             $stmt = $pdo->prepare("INSERT INTO orders (user_id, total, address) VALUES (?, ?, ?)");
-            // Giả sử user_id = 1 (chưa có hệ thống đăng nhập)
-            $stmt->execute([1, $total, $address]);
+            $user_id = $_SESSION['user_id'];
+            $stmt->execute([$user_id, $total, $address]);
             $order_id = $pdo->lastInsertId();
 
             foreach ($_SESSION['cart'] as $id => $item) {
