@@ -16,7 +16,7 @@ if (!isset($_SESSION['user_id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     include 'includes/db.php';
 
-    $address = trim($_POST['address'] ?? '');
+    $address = substr(strip_tags($address), 0, 255);
     if (!$address) {
         $error = "Vui lòng nhập địa chỉ giao hàng.";
     } else {
