@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "Email này đã được đăng ký.";
         } else {
             $hashed = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+            $stmt = $pdo->prepare("INSERT INTO users (username, email, password,role) VALUES (?, ?, ?,'user')");
             $stmt->execute([$username, $email, $hashed]);
             $success = "Đăng ký thành công! Bạn có thể <a href='login.php'>đăng nhập ngay</a>.";
         }
