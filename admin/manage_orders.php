@@ -8,10 +8,23 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 include '../includes/db.php';
 
 
+// Xử lý cập nhật trạng thái đơn hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['action'])) {
     $order_id = (int)$_POST['order_id'];
     $action = $_POST['action'];
 
+    $status_map = [
+        'confirm' => 'confirmed',
+        'ship' => 'shipped',
+        'deliver' => 'delivered'
+    ];
+
+    if (isset($status_map[$action])) {
+        $new_status = $status_map[$action];
+        $stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
+        $stmt->execute([$new_status, $order_id]);
+        $success = "✅ Cập nhật trạng thái đơn hàng #{$order_id} thành công!";
+    }
 }
 
 // Lấy danh sách đơn hàng
