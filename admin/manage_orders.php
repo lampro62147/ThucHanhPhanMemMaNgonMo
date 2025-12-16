@@ -7,6 +7,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 include '../includes/db.php';
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> duy
 // Xử lý cập nhật trạng thái đơn hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['action'])) {
     $order_id = (int)$_POST['order_id'];
