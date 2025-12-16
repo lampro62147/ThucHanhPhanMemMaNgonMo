@@ -3,7 +3,7 @@ include 'includes/header.php';
 include 'includes/db.php';
 
 // Xử lý sort
-$sort = $_POST['sort'] ?? 'newest'; // Mặc định mới nhất
+$sort = $_GET['sort'] ?? 'newest'; // Mặc định mới nhất
 $order_by = '';
 
 switch ($sort) {
