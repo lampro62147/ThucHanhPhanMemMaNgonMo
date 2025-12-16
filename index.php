@@ -37,7 +37,7 @@ $params = [];
 
 if (!empty($search)) {
     $sql .= " WHERE name LIKE ?";
-    $params[] = "$search";
+    $params[] = "%$search%";
 }
 
 if ($order_by) {
