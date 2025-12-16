@@ -2,6 +2,9 @@
 include 'includes/header.php';
 include 'includes/db.php';
 
+// Xử lý tìm kiếm
+$search = $_GET['search'] ?? '';
+
 // Xử lý sort
 $sort = $_GET['sort'] ?? 'newest'; // Mặc định mới nhất
 $order_by = '';
@@ -28,21 +31,57 @@ switch ($sort) {
         $sort_text = 'Mới nhất';
 }
 
-// Query sản phẩm với sort
+// Query sản phẩm với tìm kiếm và sort
 $sql = "SELECT * FROM products";
+$params = [];
+
+if (!empty($search)) {
+    $sql .= " WHERE name LIKE ?";
+    $params[] = "$search";
+}
+
 if ($order_by) {
     $sql .= " ORDER BY $order_by";
 }
 
-$stmt = $pdo->query($sql);
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
 $products = $stmt->fetchAll();
 ?>
 <main>
     <h2>Sản phẩm nổi bật</h2>
     
+    <!-- Thêm form tìm kiếm -->
+    <div class="search-container">
+        <form method="get" class="search-form">
+            <input type="text" 
+                   name="search" 
+                   placeholder="Tìm kiếm sản phẩm..." 
+                   value="<?= htmlspecialchars($search) ?>">
+            <button type="submit">Tìm kiếm</button>
+            <?php if (!empty($search)): ?>
+                <a href="?" class="clear-search">Xóa tìm kiếm</a>
+            <?php endif; ?>
+        </form>
+        
+        <!-- Hiển thị kết quả tìm kiếm -->
+        <?php if (!empty($search)): ?>
+            <div class="search-results">
+                <p>Tìm thấy <?= count($products) ?> sản phẩm cho từ khóa: 
+                    <strong>"<?= htmlspecialchars($search) ?>"</strong>
+                </p>
+            </div>
+        <?php endif; ?>
+    </div>
+    
     <!-- Thêm dropdown sort -->
     <div class="sort-container">
         <form method="get" class="sort-form">
+            <!-- Giữ lại tham số tìm kiếm -->
+            <?php if (!empty($search)): ?>
+                <input type="hidden" name="search" value="<?= htmlspecialchars($search) ?>">
+            <?php endif; ?>
+            
             <label for="sort">Sắp xếp:</label>
             <select name="sort" id="sort" onchange="this.form.submit()">
                 <option value="newest" <?= $sort == 'newest' ? 'selected' : '' ?>>Mới nhất</option>
@@ -84,4 +123,6 @@ $products = $stmt->fetchAll();
             <p>Chưa có sản phẩm nào.</p>
         <?php endif; ?>
     </div>
+    
 </main>
+<?php include 'includes/footer.php'; ?>
