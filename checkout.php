@@ -6,17 +6,10 @@ if (empty($_SESSION['cart'])) {
     exit;
 }
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
-}
-
-
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     include 'includes/db.php';
 
-    $address = substr(strip_tags($address), 0, 255);
+    $address = trim($_POST['address'] ?? '');
     if (!$address) {
         $error = "Vui lòng nhập địa chỉ giao hàng.";
     } else {
@@ -28,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
             $stmt = $pdo->prepare("INSERT INTO orders (user_id, total, address) VALUES (?, ?, ?)");
-            $user_id = $_SESSION['user_id'];
-            $stmt->execute([$user_id, $total, $address]);
+            // Giả sử user_id = 1 (chưa có hệ thống đăng nhập)
+            $stmt->execute([1, $total, $address]);
             $order_id = $pdo->lastInsertId();
 
             foreach ($_SESSION['cart'] as $id => $item) {
