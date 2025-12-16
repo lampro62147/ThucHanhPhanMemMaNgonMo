@@ -2,21 +2,34 @@
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
    
     exit;
 }
 ?>
 <?php
+<<<<<<< HEAD
 =======
     header("Location: ../login.php");
     exit;
 }
 >>>>>>> duy
+=======
+    header("Location: ../login.php");
+    exit;
+}
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
 include '../includes/db.php';
 $stmt = $pdo->query("SELECT * FROM users");
 $users = $stmt->fetchAll();
 ?>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
 <style>
 .user-table {
     width: 100%;
@@ -56,6 +69,9 @@ $users = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
     <title>Admin Dashboard</title>
     <!-- 🟢 Giữ nguyên base để fix header -->
     <base href="http://localhost:3000/">
@@ -162,7 +178,11 @@ $users = $stmt->fetchAll();
             margin-left: 15px;
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
 
         /* Nội dung chính */
         .container {
@@ -170,7 +190,10 @@ $users = $stmt->fetchAll();
             margin: 0 auto;
             padding: 20px;
         }
+<<<<<<< HEAD
 >>>>>>> duy
+=======
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
     </style>
 </head>
 <body>
@@ -194,11 +217,20 @@ $users = $stmt->fetchAll();
     </nav>
 </header>
 <<<<<<< HEAD
+<<<<<<< HEAD
 <main style="max-width: 1000px; margin: 0 auto; padding: 20px;">
 =======
 
 <div class="container">
 >>>>>>> duy
+=======
+
+<main style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+
+
+<div class="container">
+
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
     <h2>👥 Quản lý người dùng</h2>
     <p>Tổng số: <?= count($users) ?> người dùng</p>
 
@@ -229,13 +261,25 @@ $users = $stmt->fetchAll();
         </tbody>
     </table>
 <<<<<<< HEAD
+<<<<<<< HEAD
 </main>
 
 <?php include '../includes/footer.php'; ?>
 =======
+=======
+
+</main>
+
+<?php include '../includes/footer.php'; ?>
+
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
 </div>
 
 <?php include '../includes/footer.php'; ?>
 </body>
 </html>
+<<<<<<< HEAD
 >>>>>>> duy
+=======
+
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8

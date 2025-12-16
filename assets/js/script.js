@@ -1,5 +1,9 @@
  
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
 // Tự động focus vào ô tìm kiếm
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.querySelector('input[name="search"]');
@@ -31,5 +35,9 @@ document.addEventListener('DOMContentLoaded', function() {
         updateClearButton();
     }
 });
+<<<<<<< HEAD
 =======
 >>>>>>> duy
+=======
+
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8

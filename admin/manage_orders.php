@@ -8,9 +8,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 include '../includes/db.php';
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> duy
+=======
+
+>>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
 // Xử lý cập nhật trạng thái đơn hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['action'])) {
     $order_id = (int)$_POST['order_id'];
