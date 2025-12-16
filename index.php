@@ -2,6 +2,7 @@
 include 'includes/header.php';
 include 'includes/db.php';
 
+
 // Xử lý tìm kiếm
 $search = $_GET['search'] ?? '';
 
@@ -46,10 +47,14 @@ if ($order_by) {
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
+
+$stmt = $pdo->query("SELECT * FROM products ORDER BY id DESC");
+
 $products = $stmt->fetchAll();
 ?>
 <main>
     <h2>Sản phẩm nổi bật</h2>
+
     
     <!-- Thêm form tìm kiếm -->
     <div class="search-container">
@@ -96,6 +101,7 @@ $products = $stmt->fetchAll();
         </div>
     </div>
     
+
     <div class="product-grid">
         <?php if ($products): ?>
             <?php foreach ($products as $p): ?>
@@ -123,6 +129,6 @@ $products = $stmt->fetchAll();
             <p>Chưa có sản phẩm nào.</p>
         <?php endif; ?>
     </div>
-    
+
 </main>
 <?php include 'includes/footer.php'; ?>

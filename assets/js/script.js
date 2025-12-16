@@ -1,4 +1,5 @@
  
+
 // Tự động focus vào ô tìm kiếm
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.querySelector('input[name="search"]');
@@ -30,3 +31,4 @@ document.addEventListener('DOMContentLoaded', function() {
         updateClearButton();
     }
 });
+

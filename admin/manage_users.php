@@ -1,11 +1,15 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+
    
     exit;
 }
 ?>
 <?php
+    header("Location: ../login.php");
+    exit;
+}
 include '../includes/db.php';
 $stmt = $pdo->query("SELECT * FROM users");
 $users = $stmt->fetchAll();
@@ -41,6 +45,8 @@ $users = $stmt->fetchAll();
     border-radius: 4px;
 }
 </style>
+=======
+>>>>>>> duy
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -84,6 +90,41 @@ $users = $stmt->fetchAll();
         .icon {
             font-size: 2.5rem;
             color: #ee4d2d;
+=======
+    <title>Quản lý người dùng</title>
+    <!-- 🟢 Đặt gốc cho mọi đường dẫn -->
+    <base href="http://localhost:3000/">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .user-table th,
+        .user-table td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .user-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        .user-table tr:last-child td {
+            border-bottom: none;
+        }
+        .role-admin {
+            background: #ffebee;
+            color: #c62828;
+            padding: 2px 8px;
+            border-radius: 4px;
+>>>>>>> duy
         }
 
         /* Header */
@@ -116,6 +157,14 @@ $users = $stmt->fetchAll();
             display: inline-block;
             margin-left: 15px;
         }
+
+
+        /* Nội dung chính */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -138,7 +187,12 @@ $users = $stmt->fetchAll();
         <?php endif; ?>
     </nav>
 </header>
+
 <main style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+
+
+<div class="container">
+
     <h2>👥 Quản lý người dùng</h2>
     <p>Tổng số: <?= count($users) ?> người dùng</p>
 
@@ -168,6 +222,14 @@ $users = $stmt->fetchAll();
             <?php endforeach; ?>
         </tbody>
     </table>
+
 </main>
 
 <?php include '../includes/footer.php'; ?>
+
+</div>
+
+<?php include '../includes/footer.php'; ?>
+</body>
+</html>
+
