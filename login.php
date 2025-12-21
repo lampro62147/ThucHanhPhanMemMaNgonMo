@@ -28,6 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $error = "Vui lòng nhập đầy đủ thông tin.";
     }
+
+
     
 }
 ?>
