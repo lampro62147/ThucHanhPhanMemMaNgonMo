@@ -59,5 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </label><br><br>
         <button type="submit" class="btn">Xác nhận đặt hàng</button>
     </form>
+
+    
 </main>
 <?php include 'includes/footer.php'; ?>
