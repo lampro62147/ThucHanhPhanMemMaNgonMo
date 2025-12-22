@@ -1,285 +1,226 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+    header("Location: ../login.php");
+    exit;
+}
 
->>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
-   
-    exit;
-}
-?>
-<?php
-<<<<<<< HEAD
-=======
-    header("Location: ../login.php");
-    exit;
-}
->>>>>>> duy
-=======
-    header("Location: ../login.php");
-    exit;
-}
->>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
 include '../includes/db.php';
-$stmt = $pdo->query("SELECT * FROM users");
-$users = $stmt->fetchAll();
+
+// --- XỬ LÝ XÓA NGƯỜI DÙNG ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    $user_id = (int)$_POST['user_id'];
+    // Không cho xóa chính admin đang đăng nhập
+    if ($user_id !== $_SESSION['user_id']) {
+        $pdo->prepare("DELETE FROM users WHERE id = ?")->execute([$user_id]);
+        $message = "✅ Xóa người dùng thành công!";
+    } else {
+        $error = "❌ Không thể xóa chính tài khoản admin đang đăng nhập!";
+    }
+}
+
+// --- XỬ LÝ CẬP NHẬT NGƯỜI DÙNG ---
+$update_success = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
+    $user_id = (int)$_POST['user_id'];
+    $username = trim($_POST['username'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $role = $_POST['role'] ?? 'user';
+
+    if ($username && $email) {
+        // Kiểm tra email có bị trùng không (trừ chính người dùng này)
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+        $stmt->execute([$email, $user_id]);
+        if ($stmt->fetch()) {
+            $error = "❌ Email này đã được sử dụng bởi người dùng khác!";
+        } else {
+            $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?");
+            $stmt->execute([$username, $email, $role, $user_id]);
+            $update_success = "✅ Cập nhật thông tin thành công!";
+            // Sau khi cập nhật, quay lại danh sách
+            header("Location: manage_users.php?updated=1");
+            exit;
+        }
+    } else {
+        $error = "❌ Vui lòng nhập đầy đủ thông tin!";
+    }
+}
+
+// --- CHẾ ĐỘ SỬA: LẤY DỮ LIỆU NGƯỜI DÙNG ---
+$edit_mode = false;
+$edit_user = null;
+if (isset($_GET['edit'])) {
+    $edit_id = (int)$_GET['edit'];
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$edit_id]);
+    $edit_user = $stmt->fetch();
+    if ($edit_user) {
+        $edit_mode = true;
+    }
+}
+
+// --- LẤY DANH SÁCH NGƯỜI DÙNG (nếu không ở chế độ sửa) ---
+if (!$edit_mode) {
+    $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC");
+    $users = $stmt->fetchAll();
+}
 ?>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
-<style>
-.user-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-.user-table th,
-.user-table td {
-    padding: 14px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-}
-.user-table th {
-    background: #f8f9fa;
-    font-weight: 600;
-    color: #555;
-}
-.user-table tr:last-child td {
-    border-bottom: none;
-}
-.role-admin {
-    background: #ffebee;
-    color: #c62828;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-</style>
-=======
->>>>>>> duy
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
-    <title>Admin Dashboard</title>
-    <!-- 🟢 Giữ nguyên base để fix header -->
+    <meta name="webtoken" content="width=device-width, initial-scale=1.0">
+    <title><?= $edit_mode ? 'Sửa người dùng' : 'Quản lý người dùng' ?></title>
     <base href="http://localhost:3000/">
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        .admin-container {
-            max-width: 1100px;
-            margin: 30px auto;
-            padding: 20px;
+        body { margin: 0; font-family: Arial, sans-serif; }
+        header {
+            background-color: #ee4d2d; color: white; padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+        header h1 { font-size: 1.8rem; }
+        header nav a {
+            color: white; text-decoration: none; margin-left: 15px;
+            padding: 5px 10px; border-radius: 4px;
         }
-        .admin-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: transform 0.3s, box-shadow 0.3s;
-            text-decoration: none;
-            color: #333;
-        }
-        .admin-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-        }
-        .admin-card h3 {
-            margin-top: 15px;
-            font-size: 1.2rem;
-            color: #ee4d2d;
-        }
-        .icon {
-            font-size: 2.5rem;
-            color: #ee4d2d;
-=======
-    <title>Quản lý người dùng</title>
-    <!-- 🟢 Đặt gốc cho mọi đường dẫn -->
-    <base href="http://localhost:3000/">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <style>
+        header nav a:hover { background: rgba(255,255,255,0.2); }
+        .header-user { display: inline-block; margin-left: 15px; }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .alert { padding: 10px; border-radius: 6px; margin-bottom: 15px; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; }
+        .alert-error { background: #ffebee; color: #c62f2f; }
+
         .user-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
+            width: 100%; border-collapse: collapse; margin-top: 20px;
+            background: white; border-radius: 10px; overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        .user-table th,
-        .user-table td {
-            padding: 14px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
+        .user-table th, .user-table td {
+            padding: 14px; text-align: left; border-bottom: 1px solid #eee;
         }
-        .user-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #555;
-        }
-        .user-table tr:last-child td {
-            border-bottom: none;
-        }
-        .role-admin {
-            background: #ffebee;
-            color: #c62828;
-            padding: 2px 8px;
-            border-radius: 4px;
->>>>>>> duy
-        }
+        .user-table th { background: #f8f9fa; font-weight: 600; color: #555; }
+        .user-table tr:last-child td { border-bottom: none; }
+        .role-admin { background: #ffebee; color: #c62828; padding: 2px 8px; border-radius: 4px; }
 
-        /* Header */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        header {
-            background-color: #ee4d2d;
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 {
-            font-size: 1.8rem;
-        }
-        header nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-            padding: 5px 10px;
-            border-radius: 4px;
-        }
-        header nav a:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        .header-user {
-            display: inline-block;
-            margin-left: 15px;
-        }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-edit { background: #1976d2; color: white; }
+        .btn-delete { background: #d32f2f; color: white; }
+        .btn:hover { opacity: 0.9; }
 
->>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
-
-        /* Nội dung chính */
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
+        .form-section {
+            background: white; padding: 20px; border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 20px;
         }
-<<<<<<< HEAD
->>>>>>> duy
-=======
->>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        .back-btn {
+            display: inline-block; margin-top: 10px; color: #ee4d2d;
+            text-decoration: none; font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-<!-- Header -->
 <header>
     <h1>🛒 Shoppee Clone</h1>
     <nav>
         <a href="index.php">Trang chủ</a>
-        <a href="cart.php">Giỏ hàng (<?php
-            $count = isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0;
-            echo $count;
-        ?>)</a>
+        <a href="cart.php">Giỏ hàng (<?= isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0 ?>)</a>
         <?php if (isset($_SESSION['user_id'])): ?>
             <span class="header-user">Xin chào, <?= htmlspecialchars($_SESSION['username']) ?>!</span>
             <a href="admin/dashboard.php">Admin</a>
             <a href="logout.php">Đăng xuất</a>
-        <?php else: ?>
-            <a href="login.php">Đăng nhập</a>
         <?php endif; ?>
     </nav>
 </header>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<main style="max-width: 1000px; margin: 0 auto; padding: 20px;">
-=======
 
 <div class="container">
->>>>>>> duy
-=======
+    <?php if (isset($message)): ?>
+        <div class="alert alert-success"><?= $message ?></div>
+    <?php endif; ?>
+    <?php if (isset($error)): ?>
+        <div class="alert alert-error"><?= $error ?></div>
+    <?php endif; ?>
+    <?php if (isset($_GET['updated'])): ?>
+        <div class="alert alert-success">✅ Cập nhật thông tin thành công!</div>
+    <?php endif; ?>
 
-<main style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+    <?php if ($edit_mode): ?>
+        <!-- FORM SỬA NGƯỜI DÙNG -->
+        <h2>✏️ Sửa thông tin người dùng</h2>
+        <div class="form-section">
+            <form method="POST">
+                <input type="hidden" name="user_id" value="<?= $edit_user['id'] ?>">
+                <div class="form-group">
+                    <label>Tên đăng nhập</label>
+                    <input type="text" name="username" value="<?= htmlspecialchars($edit_user['username']) ?>" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" value="<?= htmlspecialchars($edit_user['email']) ?>" required>
+                </div>
+                <div class="form-group">
+                    <label>Vai trò</label>
+                    <select name="role" class="form-control">
+                        <option value="user" <?= $edit_user['role'] === 'user' ? 'selected' : '' ?>>Người dùng</option>
+                        <option value="admin" <?= $edit_user['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
+                    </select>
+                </div>
+                <button type="submit" name="update_user" class="btn btn-edit">Lưu thay đổi</button>
+                <a href="manage_users.php" class="back-btn">← Hủy và quay lại</a>
+            </form>
+        </div>
+    <?php else: ?>
+        <!-- DANH SÁCH NGƯỜI DÙNG -->
+        <h2>👥 Quản lý người dùng</h2>
+        <p>Tổng số: <?= count($users) ?> người dùng</p>
 
-
-<div class="container">
-
->>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
-    <h2>👥 Quản lý người dùng</h2>
-    <p>Tổng số: <?= count($users) ?> người dùng</p>
-
-    <table class="user-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Tên đăng nhập</th>
-                <th>Email</th>
-                <th>Vai trò</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($users as $u): ?>
-            <tr>
-                <td><?= $u['id'] ?></td>
-                <td><?= htmlspecialchars($u['username']) ?></td>
-                <td><?= htmlspecialchars($u['email']) ?></td>
-                <td>
-                    <?php if ($u['role'] === 'admin'): ?>
-                        <span class="role-admin">Admin</span>
-                    <?php else: ?>
-                        Người dùng
-                    <?php endif; ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-<<<<<<< HEAD
-<<<<<<< HEAD
-</main>
-
-<?php include '../includes/footer.php'; ?>
-=======
-=======
-
-</main>
-
-<?php include '../includes/footer.php'; ?>
-
->>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Email</th>
+                    <th>Vai trò</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($users as $u): ?>
+                <tr>
+                    <td><?= $u['id'] ?></td>
+                    <td><?= htmlspecialchars($u['username']) ?></td>
+                    <td><?= htmlspecialchars($u['email']) ?></td>
+                    <td>
+                        <?php if ($u['role'] === 'admin'): ?>
+                            <span class="role-admin">Admin</span>
+                        <?php else: ?>
+                            Người dùng
+                        <?php endif; ?>
+                    </td>
+                    <!-- Trong phần hiển thị danh sách người dùng -->
+                    <td>
+                        <a href="/admin/manage_users.php?edit=<?= $u['id'] ?>" class="btn btn-edit">✏️ Sửa</a>
+                        <?php if ($u['id'] !== $_SESSION['user_id']): ?>
+                            <form method="POST" style="display:inline;" onsubmit="return confirm('Xác nhận xóa người dùng này?')">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
+                                <button type="submit" class="btn btn-delete">🗑️ Xóa</button>
+                            </form>
+                        <?php else: ?>
+                            <span style="color:#999;">(Không thể xóa)</span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 </div>
 
 <?php include '../includes/footer.php'; ?>
 </body>
 </html>
-<<<<<<< HEAD
->>>>>>> duy
-=======
-
->>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8

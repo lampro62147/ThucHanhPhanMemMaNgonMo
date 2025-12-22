@@ -149,14 +149,12 @@ $products = $stmt->fetchAll();
 
         <!-- Form thêm sản phẩm -->
         <div class="form-section">
-<<<<<<< HEAD
-<<<<<<< HEAD
+
             <h3>➕ Thêm sản phẩm mới</h3>
-=======
+
             <h3>Thêm sản phẩm mới</h3>
->>>>>>> duy
-=======
->>>>>>> bf41394b9638b218b9e898b499a755fdc4f58fc8
+
+
             <form method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>Tên sản phẩm</label>
